@@ -322,54 +322,7 @@ onoremap ad a"
 
 
 
-" Visual_Mode {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-" Entering Block Visual ----------------------------------------------------------------------------------------
-
-xnoremap <Plug>(Visual-i) i
-xnoremap <Plug>(Visual-a) a
-
-" line("'<"), line("'>") は、一旦VisualMode を抜けないと、前回の選択範囲分となってしまう。
-"xnoremap <silent> <Plug>(Visual-I) <Esc>:xunmap <buffer> i<CR>:call feedkeys('gv' . ( line("'<") != line("'>") ? 'I' : 'i'), 't')<CR>
-"xnoremap <silent> <Plug>(Visual-A) <Esc>:xunmap <buffer> a<CR>:call feedkeys('gv' . ( line("'<") != line("'>") ? 'A' : 'a'), 't')<CR>
-" feedkeysのArg#3の根拠。⇒ 余るv_Aは再マップして、他に流用したい。一方、text-objectの'a'はマップされているかもしれない。
-xnoremap <silent> <Plug>(Visual-I) <Esc>:xunmap <buffer> i<CR>:call feedkeys('gv' . ( line("'<") != line("'>") ? 'I' : 'i'), 't' . ( line("'<") != line("'>") ? 'n' : ''))<CR>
-xnoremap <silent> <Plug>(Visual-A) <Esc>:xunmap <buffer> a<CR>:call feedkeys('gv' . ( line("'<") != line("'>") ? 'A' : 'a'), 't' . ( line("'<") != line("'>") ? 'n' : ''))<CR>
-
-" nr2char(22) は "<C-v>"
-let Ctrl_v = function('nr2char', [22])
-" <buffer>と<nowait>により、各omapより優先させる。
-nnoremap <silent> v :<C-u>call RestoreDefaultStatusline(v:false)<CR>
-      \:<C-u>set virtualedit-=block<CR>
-      \:xmap <expr> <buffer> <nowait> i mode() == Ctrl_v() ? "<Plug>(Visual-I)" : "<Plug>(Visual-i)"<CR>
-      \:xmap <expr> <buffer> <nowait> a mode() == Ctrl_v() ? "<Plug>(Visual-A)" : "<Plug>(Visual-a)"<CR>
-      \<C-v>
-      ":xmap <expr> <buffer> <nowait> i mode() == nr2char(22) ? "<Plug>(Visual-I)" : "<Plug>(Visual-i)"<CR>
-      ":xmap <expr> <buffer> <nowait> a mode() == nr2char(22) ? "<Plug>(Visual-A)" : "<Plug>(Visual-a)"<CR>
-
-
-" Entering Ohter Visual ----------------------------------------------------------------------------------------
-
-nnoremap <silent> V     :<C-u>call RestoreDefaultStatusline(v:false)<CR>V
-
-nnoremap <silent> <C-v> :<C-u>call RestoreDefaultStatusline(v:false)<CR>v
-
-
-" Virtual Edit ----------------------------------------------------------------------------------------
-
-vnoremap v         <Esc>:<C-u>exe 'set virtualedit' . (&virtualedit =~# 'block' ? '-=' : '+=') .'block'<CR>gv
-" TODO Entering V のときに、block無効化しているが、auにすべき。
-vnoremap <Leader>v <Esc>:<C-u>exe 'set virtualedit' . (&virtualedit =~# 'block' ? '-=' : '+=') .'block'<CR>gv
-vnoremap <C-k>     <Esc>:<C-u>exe 'set virtualedit' . (&virtualedit =~# 'block' ? '-=' : '+=') .'block'<CR>gv
-vnoremap <C-j>     <Esc>:<C-u>exe 'set virtualedit' . (&virtualedit =~# 'block' ? '-=' : '+=') .'block'<CR>gv
-
-
-" Visual_Mode }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" Cursor Move, CursorLine, CursorColumn, and Scroll {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
+" " Cursor Move, CursorLine, CursorColumn, and Scroll {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 
 "----------------------------------------------------------------------------------------
@@ -6376,15 +6329,6 @@ vnoremap gU U
 " nnoremap $ <Nop>
 " vnoremap ^ <Nop>
 " vnoremap $ <Nop>
-
-
-
-"---------------------------------------------------------------------------------------------
-
-" 行右端で、なお右に進もうとしたら、virtualeditにblockを追加して、何事もなかったかのように右へ移動する。
-vnoremap <expr> l &virtualedit !~# 'block' && search('\%#$', 'bcn') ?
-      \ '<Esc>:<C-u>set virtualedit+=block<CR>' . 'gv' . 'l' :
-      \ 'l'
 
 
 

@@ -278,37 +278,6 @@ onoremap ad a"
 
 
 
-" Entering_Visual_Mode {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-" Block Visual ----------------------------------------------------------------------------------------
-
-vnoremap <Plug>(Visual-i) i
-vnoremap <Plug>(Visual-a) a
-
-" line("'<"), line("'>") は、一旦VisualMode を抜けないと、前回の選択範囲分となってしまう。
-vnoremap <silent> <Plug>(Visual-I) <Esc>:vunmap <buffer> i<CR>:call feedkeys('gv' . ( line("'<") != line("'>") ? 'I' : 'i'), 't')<CR>
-vnoremap <silent> <Plug>(Visual-A) <Esc>:vunmap <buffer> a<CR>:call feedkeys('gv' . ( line("'<") != line("'>") ? 'A' : 'a'), 't')<CR>
-
-" 22 は、<C-v>
-" <buffer>と<nowait>により、各omapより優先させる。
-nnoremap <silent> v :<C-u>call RestoreDefaultStatusline(v:false)<CR>
-      \:vmap <expr> <buffer> <nowait> i mode() == nr2char(22) ? "<Plug>(Visual-I)" : "<Plug>(Visual-i)"<CR>
-      \:vmap <expr> <buffer> <nowait> a mode() == nr2char(22) ? "<Plug>(Visual-A)" : "<Plug>(Visual-a)"<CR>
-      \<C-v>
-
-
-" Ohter Visual ----------------------------------------------------------------------------------------
-
-nnoremap <silent> V     :<C-u>call RestoreDefaultStatusline(v:false)<CR>V
-
-nnoremap <silent> <C-v> :<C-u>call RestoreDefaultStatusline(v:false)<CR>v
-
-
-" VEntering_isual_Mode }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " Cursor Move, CursorLine, CursorColumn, and Scroll {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 
