@@ -845,77 +845,7 @@ nmap <BS><C-n>  <Plug>(MyVimrc-Window-AutoSplit)<Plug>(MyVimrc-WinCmd-p)<C-n>
 
 
 
-" Diff {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-"set diffopt+=iwhite
-
-" diff Cancel
-nnoremap dc    :<C-u>diffoff<CR>
-nnoremap d<BS> :<C-u>diffoff<CR>
-
-" diff (all window) Quit
-nnoremap <silent> dq
-      \ :<C-u>call PushPos_All() <Bar> exe 'windo diffoff' <Bar> call PopPos_All() <Bar> echo 'windo diffoff'<CR>
-
-" diff (all window and buffer) Quit
-nnoremap <silent> dQ
-      \ :<C-u>call PushPos_All() <Bar> exe 'bufdo diffoff' <Bar> exe 'windo diffoff' <Bar> call PopPos_All()<CR>
-      \ :echo 'bufdo diffoff <Bar> windo diffoff'<CR>
-
-" diff Update
-nmap du d<Space>
-
-" diff I(l)gnorecase
-nnoremap <expr> dl match(&diffopt, 'icase' ) < 0 ? ':<C-u>set diffopt+=icase<CR>'  : ':<C-u>set diffopt-=icase<CR>'
-
-" diff whi(Y)tespace
-nnoremap <expr> dy match(&diffopt, 'iwhite') < 0 ? ':<C-u>set diffopt+=iwhite<CR>' : ':<C-u>set diffopt-=iwhite<CR>'
-
-" diff toggle
-nnoremap <expr> dx
-        \ &diff ? ':<C-u>diffoff<CR>' :
-        \ winnr('$') == 2 ? ':<C-u>call PushPos_All() <Bar> exe "windo diffthis" <Bar> call PopPos_All()<CR>' :
-        \ ':<C-u>diffthis<CR>'
-
-nnoremap d<Leader> dx
-
-" diff Special
-nnoremap <expr> d<Space>
-        \ &diff ? ':<C-u>diffupdate<CR>' :
-        \ winnr('$') == 2 ? ':<C-u>call PushPos_All() <Bar> exe "windo diffthis" <Bar> call PopPos_All()<CR>' :
-        \ ':<C-u>diffthis<CR>'
-
-" Git Diff
-"   ・Windowが1つだけならそのタブで、そうでなければ新しいタブで実行。
-"   ・Focusを元のWindowへ戻す。
-"   ・なぜかfeedkeysにしないと、ウィンドウ移動できない。マップ中にウィンドウを作成すると、それを認識できないようだ。
-"   ・Gdiffsplit実行中は、コマンドラインにGdiffsplitが見えるようにする。
-nnoremap d<CR> :<C-u>exe ( winnr('$') > 1 ? 'tab split' : '' )<CR>:Gdiffsplit<CR>:call feedkeys('<C-v><C-w>p', 'nt')<CR>
-
-" Next Hunk
-"nnoremap <silent> <Tab> ]c^zz:FuncNameStl<CR>
-nnoremap <silent> <Tab> ]c^:FuncNameStl<CR>
-
-" Previouse Hunk
-"nnoremap <silent> <S-Tab> [c^zz:FuncNameStl<CR>
-nnoremap <silent> <S-Tab> [c^:FuncNameStl<CR>
-
-" diff accept (obtain and next, obtain and previouse) (dotは、repeat'.')
-
-let g:DiffAcceptSleepTime = 500
-
-nnoremap d. do:exe 'sleep' g:DiffAcceptSleepTime . 'm'<CR>]c^zz
-nnoremap d, dp:exe 'sleep' g:DiffAcceptSleepTime . 'm'<CR>]c^zz
-
-" Block Diff
-vmap <leader>1 <Plug>(BlockDiff-GetBlock1)
-vmap <leader>2 <Plug>(BlockDiff-GetBlock2andExe)
-
-" Diff }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
+" " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 set noequalalways
 

@@ -607,52 +607,7 @@ nnoremap T <C-w>T
 
 "---------------------------------------------------------------------------------------------
 
-" nnoremap <silent> d<S-CR> :<C-u>Gdiffsplit<CR>
-
-
-
-"---------------------------------------------------------------------------------------------
-
 " com! Tac !tac
-
-
-"---------------------------------------------------------------------------------------------
-
-"set diffopt+=closeoff
-
-function! s:get_diff_context()
-  let diffopt = &diffopt
-  if diffopt =~ 'context'
-    let diffopts = split(diffopt. ',')
-    let diffopts_joined = join(diffopts)
-    let diffcontext = matchstr(diffopts_joined, 'context:\zs\d\+')
-  else
-    let diffcontext = 6
-  endif
-  return diffcontext
-endfunction
-
-function! s:set_diff_context(diffcontext_new)
-  let diffopt = &diffopt
-  if diffopt =~ 'context'
-    let diffopts = split(diffopt. ',')
-    let diffopts_joined = join(diffopts)
-    let diffcontext = matchstr(diffopts_joined, 'context:\d\+')
-    exe 'set diffopt-=' . diffcontext
-  endif
-  exe 'set diffopt+=context:' . a:diffcontext_new
-  return
-endfunction
-
-com! -bang -nargs=? DiffContextInc call s:set_diff_context( s:get_diff_context() + (<q-args> == '' ? 1 : <q-args>) )
-com! -bang -nargs=? DiffContextDec call s:set_diff_context( s:get_diff_context() - (<q-args> == '' ? 1 : <q-args>) )
-com! -bang -nargs=0 DiffContextReset call s:set_diff_context( 6 )
-
-"nnoremap d+ :<C-u>DiffContextInc v:count1<CR>
-"nnoremap d- :<C-u>DiffContextDec v:count1<CR>
-nnoremap d+ :<C-u>exe 'DiffContextInc' v:count1<CR>
-nnoremap d- :<C-u>exe 'DiffContextDec' v:count1<CR>
-nnoremap d= :<C-u>DiffContextReset<CR>
 
 
 "---------------------------------------------------------------------------------------------
