@@ -543,27 +543,6 @@ vnoremap         *   y:let lstmp = @"<CR>/\C\V<C-r>=escape(lstmp, '/\|\\')<CR><C
 
 
 
-" Substitute {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-nnoremap S               :<C-u>g$.$s    %%<Left>
-nnoremap <C-s>           :<C-u>g$.$s    %<C-R>/%%g<Left><Left>
-nnoremap gs              :<C-u>g$.$s    %<C-R><C-W>%%g<Left><Left>
-"nnoremap gS              :<C-u>g$.$s    %<C-R><C-W>%<C-R><C-W>%g<Left><Left>
-nnoremap gS              :<C-u>g$.$s    %<C-R>"%%g<Left><Left>
-nnoremap <Leader>s           :<C-u>s    %%%g<Left><Left><Left>
-
-vnoremap S                        :s    %%<Left>
-vnoremap <C-s>                    :s    %<C-R>/%%g<Left><Left>
-vnoremap gs                       :s    %<C-R>/%<C-R><C-W>%g
-nnoremap gS                       :s    %<C-R>"%%g<Left><Left>
-
-"cnoremap <expr> <C-g> match(getcmdline(), '\(g.\..s\\|s\)    /') == 0 ? '<End>/g' :
-"                    \ match(getcmdline(), '\(g.\..s\\|s\)    %') == 0 ? '<End>/g' : ''
-
-" Substitute }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " Grep {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 set grepprg=$HOME/bin/ag\ --line-numbers
