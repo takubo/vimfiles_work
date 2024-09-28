@@ -4,6 +4,9 @@ scriptencoding utf-8
 " (この行に関しては:help modelineを参照)
 
 
+
+"---------------------------------------------------------------------------------------------
+
 function Unified_Tab(m)
   if &diff
     if a:m > 0
@@ -63,6 +66,7 @@ endfunction
 
 
 "---------------------------------------------------------------------------------------------
+
 nnoremap <silent>         t :<C-u>call Unified_Tab( 1)<CR>
 nnoremap <silent>         T :<C-u>call Unified_Tab(-1)<CR>
 nnoremap <silent>        gt :<C-u>cfirst<CR>
@@ -137,6 +141,9 @@ function! s:CompletionTabline(ArgLead, CmdLine, CusorPos)
 endfunction
 
 
+
+"---------------------------------------------------------------------------------------------
+
 nnoremap m J
 vnoremap m J
 nnoremap gm gJ
@@ -147,8 +154,11 @@ nmap U <Plug>(MyVimrc-Window-AutoNew)
 
 
 "---------------------------------------------------------------------------------------------
+
 iab FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}
 iab <silent> FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}<C-R>=Eatchar('\s')<CR>
+
+iab LOOP while ( 1 ) {<CR>}
 
 
 
@@ -250,6 +260,7 @@ endfunction
 
 "---------------------------------------------------------------------------------------------
 
+" コマンドラインで、"<Space>"を入力しやすくする。
 cnoremap <expr> <C-v><Space> '<' . 'Space' . '>'
 
 
