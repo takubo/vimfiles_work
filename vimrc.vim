@@ -543,72 +543,6 @@ vnoremap         *   y:let lstmp = @"<CR>/\C\V<C-r>=escape(lstmp, '/\|\\')<CR><C
 
 
 
-" Grep {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-set grepprg=$HOME/bin/ag\ --line-numbers
-set grepprg=/usr/bin/grep\ -an
-set grepprg=git\ grep\ --no-index\ -I\ --line-number
-
-"========================================================
-
-nnoremap !             :<C-u>grep ''<Left>
-nnoremap <Leader>g     :<C-u>grep '<C-R>/'<CR>
-nnoremap <silent> <C-g><C-g> :<C-u>grep '\<<C-R><C-W>\>'<CR>
-nnoremap <silent> <C-g><C-g> :<C-u>grep '\<<C-R><C-W>\>' -- ':!.svn/' ':!tags'<CR>
-
-"========================================================
-
-let g:prj_root_file = '.git'
-
-augroup MyVimrc_Grep
-  au!
-  exe "au WinEnter * if (&buftype == 'quickfix') | cd " . getcwd() . " | endif"
-augroup end
-
-function! CS(str)
-  let save_autochdir = &autochdir
-  set autochdir
-
-  let pwd = getcwd()
-
-  for i in range(7)
-    if glob(g:prj_root_file) != ''  " prj_root_fileファイルの存在確認
-      try
-        if exists("*CS_Local")
-          call CS_Local(a:str)
-        else
-          exe "silent grep! '" . a:str . "' **/*.c" . " **/*.h" . " **/*.s"
-        endif
-        call feedkeys("\<CR>:\<Esc>\<C-o>", "tn")  " 見つかった最初へ移動させない。
-      finally
-      endtry
-      break
-    endif
-    cd ..
-  endfor
-
-  exe 'cd ' . pwd
-  exe 'set ' . save_autochdir
-endfunction
-
-com! CS call CS("\<C-r>\<C-w>")
-
-"nnoremap          <leader>g     :<C-u>call CS("\\<<C-r><C-w>\\>")<CR>
-"nnoremap <silent> <C-g>         :<C-u>call CS("\\<<C-r><C-w>\\>")<CR>
-"nnoremap          <leader>G     :<C-u>call CS("<C-r><C-w>")<CR>
-"nnoremap          <leader><C-g> :<C-u>call CS('')<Left><Left>
-"nnoremap <silent> <C-g>         :<C-u>call CS("\\b<C-r><C-w>\\b")<CR>
-"nnoremap <silent> <leader>g     :<C-u>call CS("\\b<C-r><C-w>\\b")<CR>
-"nnoremap          <leader>g     :<C-u>call CS('')<Left><Left>
-
-"========================================================
-
-nnoremap <Leader>g :<C-u>vim "\<<C-r><C-w>\>" *.c<CR>
-
-" Grep }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " Quickfix & Locationlist {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 let c_jk_local = 0
@@ -2235,9 +2169,6 @@ if 0
   nmap ' \
 
   set whichwrap+=hl
-
-  set grepprg=git\ grep\ -I\ --line-number
-
 endif
 "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
