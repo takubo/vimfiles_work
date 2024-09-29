@@ -95,35 +95,51 @@ com! -nargs=+ GGTA call <SID>GGrep(<q-args>, '%',              v:true,  v:false)
 
 # プロジェクトルートで、new, Quickfix
 nnoremap <silent> <C-G><C-G> :<C-U>call histadd(':', 'GG ' .. '\<<C-R><C-W>\>') <Bar> GG \<<C-R><C-W>\><CR>
+vnoremap <silent> <C-G><C-G>     y:call histadd(':', 'GG ' .. '\<<C-R>"\>')     <Bar> GG <C-R>"<CR>
 
 # プロジェクトルートで、add, Quickfix
 nnoremap <silent> <C-G><C-A> :<C-U>call histadd(':', 'GGA ' .. '\<<C-R><C-W>\>') <Bar> GGA \<<C-R><C-W>\><CR>
+vnoremap <silent> <C-G><C-A>     y:call histadd(':', 'GGA ' .. '\<<C-R>"\>')     <Bar> GGA <C-R>"<CR>
 
 # プロジェクトルートで、new, Locationlist
 nnoremap <silent> <C-G><C-L> :<C-U>call histadd(':', 'LGG ' .. '\<<C-R><C-W>\>') <Bar> LGG \<<C-R><C-W>\><CR>
+vnoremap <silent> <C-G><C-L>     y:call histadd(':', 'LGG ' .. '\<<C-R>"\>')     <Bar> LGG <C-R>"<CR>
 
 # カレントディレクトリで、new, Quickfix (C-Cはマッピングできないため、とりあえずC-Fにマッピングしている。)
 nnoremap <silent> <C-G><C-F> :<C-U>call histadd(':', 'GGC ' .. '\<<C-R><C-W>\>') <Bar> GGC \<<C-R><C-W>\><CR>
+vnoremap <silent> <C-G><C-F>     y:call histadd(':', 'GGC ' .. '\<<C-R>"\>')     <Bar> GGC <C-R>"<CR>
 
 # カレントディレクトリで、add, Quickfix (Rは押しやすさだけで、意味はない。)
 nnoremap <silent> <C-G><C-R> :<C-U>call histadd(':', 'GGCA ' .. '\<<C-R><C-W>\>') <Bar> GGCA \<<C-R><C-W>\><CR>
+vnoremap <silent> <C-G><C-R>     y:call histadd(':', 'GGCA ' .. '\<<C-R>"\>')     <Bar> GGCA <C-R>"<CR>
 
 # このファイルで、new, Quickfix (Tは、This file)
 nnoremap <silent> <C-G><C-T> :<C-U>call histadd(':', 'GGT ' .. '\<<C-R><C-W>\>') <Bar> GGT \<<C-R><C-W>\><CR>
+vnoremap <silent> <C-G><C-T>     y:call histadd(':', 'GGT ' .. '\<<C-R>"\>')     <Bar> GGT <C-R>"<CR>
 
 
 #---------------------------------------------------------------------------------------------
 # Mapping
 
-# 検索文字列、検索パスとも入力する (Iは、InputのI. また、Tabになるので、押しやすい。)
+# 文字列、検索パスとも入力する (Iは、InputのI. また、Tabになるので、押しやすい。)
 nnoremap <C-G><C-I> :<C-u>grep '' <Left><Left>
 
-# 検索文字列でgrep (Sは、SearchのS)
+# 現在の検索文字列でgrep (Sは、SearchのS)
 nnoremap <C-G><C-S> :<C-u>grep '<C-R>/'<Space>
 #nnoremap <silent> <C-g><C-g> :<C-u>grep '\<<C-R><C-W>\>'<CR>
 
+# 選択範囲でgrep (Iは、とりあえず<C-G><C-I>を引き継いでいる。)
+vnoremap <C-G><C-I> y:grep '<C-R>"'<Space>
+
 # Fall Back
 # nnoremap <Leader>g :<C-u>vim "\<<C-r><C-w>\>" *<CR>
+
+
+#---------------------------------------------------------------------------------------------
+# Mapping (Help)
+
+# TODO C-G単推しで、ヘルプをポップアップ表示する
+# nnoremap <C-G> call popup_create()
 
 
 #----------------------------------------------------------------------------------------
