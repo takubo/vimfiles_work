@@ -15,7 +15,7 @@ var PrjRootFile = '.git'
 # プロジェクトルートディレクトリの絶対パスを返す。
 # プロジェクトルートディレクトリが見つからないときは、
 # カレントディレクトリ(絶対パス)を返す。
-def GetPrjRoot(): string
+export def GetPrjRoot(): string
   # 7階層上のディレクトリまで確認
   for i in range(7)
     const dir = repeat('../', i)
