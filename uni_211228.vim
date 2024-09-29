@@ -1092,17 +1092,6 @@ else
   nnoremap g<C-j> gJ
 endif
 
-" Direction Focus (Terminal)
-tnoremap <S-Left>  <C-w>h
-tnoremap <S-Down>  <C-w>j
-tnoremap <S-Up>    <C-w>k
-tnoremap <S-Right> <C-w>l
-
-" Terminal Windowから抜ける。 (Windowが１つしかないなら、Tabから抜ける。)
-tnoremap <expr> <C-Tab>    winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
-tnoremap <expr> <C-t>      winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
-tnoremap <expr> <C-w><C-w> winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
-
 
 "----------------------------------------------------------------------------------------
 " Resize
