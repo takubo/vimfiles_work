@@ -3526,118 +3526,6 @@ highlight link MRUFileName String
 
 
 
-" SetPath {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-"set path+=./**
-"set path+=;
-
-
-"function! GetPrjRoot()
-"  let save_autochdir = &autochdir
-"  set autochdir
-"
-"  let org_dir = getcwd()
-" "let g:cwd = getcwd()    " for debug
-"
-"  let ret = ''
-"
-"  for i in range(7)
-"    if glob(g:prj_root_file) != ''  " prj_root_fileファイルの存在確認
-"      let ret = getcwd()
-"      break
-"    endif
-"    " Windowsのネットワークドライブには、一定以上、親Dirへ移動できない(というかエラーになる)バグ(?)がある。
-"    noautocmd cd ..
-"  endfor
-"
-"  exe 'noautocmd cd' org_dir
-"
-"  let &autochdir = save_autochdir
-"
-"  return ret
-"endfunction
-
-function! GetPrjRoot()
-  " {
-  " BufReadのタイミングでは、カレントディレクトリが当該バッファに変わってないのだが、
-  " set autochdirすることで、なぜかカレントディレクトリが変わるので、この処理を行っている。
-  " saveなどすると、なぜか上手くいかない。。。
-  "let save_autochdir = &autochdir
-  "set autochdir
-  "let &autochdir = save_autochdir
-  " }
-
-  let g:cwd = getcwd()    " for debug
-  let ret = ''
-
-  for i in range(7)
-    if glob(repeat('../', i) . g:prj_root_file) != ''  " prj_root_fileファイルの存在確認
-      let ret = fnamemodify(repeat('../', i), ":p")
-      break
-    endif
-  endfor
-
-  return ret
-endfunction
-
-function! GetPrjRootPath()
-  let root = GetPrjRoot()
-  let root = substitute(root, '.\zs/$', '', '')  " root dirを除外するため'/'の前に1文字以上必要。
-  if root == ''
-    return ''
-  else
-    return ',' . root . '/**'
-  endif
-endfunction
-
-function! GetIncPath()
- "return 'V:/include'
-  return ',V:/include'
-endfunction
-
-com! -bar Setpath let &l:path = &path . ',' . GetPrjRoot() . ';' | echo &l:path
-com! -bar Setpath let &l:path = &path . ';' . GetPrjRoot() . ';' | echo &l:path
-com! -bar Setpath let &l:path = &path . ',' . GetPrjRoot() . '/**' | echo &l:path
-com! -bar Setpath let &l:path .= GetPrjRootPath() | echo &l:path
-com! -bar SetpathSilent let &l:path .= GetPrjRootPath()
-com! -bar SetpathSilent let &l:path .= GetPrjRootPath() . GetIncPath()
-com! -bar SetpathSilent let &l:path .= '.,' . GetIncPath() . GetPrjRootPath()
-com! -bar SetpathSilent let &l:path .= ',.,' . GetIncPath() . GetPrjRootPath()
-com! -bar SetpathSilent let &l:path .= (&l:path != '' ? ',' : '') . '.' . GetIncPath() . GetPrjRootPath() | echo &l:path
-"com! -bar SetpathSilent if &l:path !~ '\*$' | let &l:path .= '.,' . GetIncPath() . GetPrjRootPath() | endif
-"com! -bar SetpathSilent let &l:path = 'aa'
-
-augroup MyVimrc_SetPath
-  au!
- "au BufRead * let &l:path = &path . ',' . GetPrjRoot() . ';' | " echo &l:path
- "au BufRead * let &l:path = &path . ',' . GetPrjRoot() . '/**' | " echo &l:path
- "au BufRead,BufNewFile * SetpathSilent
- "au BufRead,BufNewFile,BufNew * SetpathSilent
- "au BufRead,BufNewFile,BufNew * SetpathSilent
- "au BufRead * SetpathSilent
-  au BufReadPost,BufNewFile * SetpathSilent
- "au BufNewFile,BufNew * SetpathSilent
-augroup end
-
-com! -bar ResetPath let &l:path = '' | SetpathSilent | set path " 最後のsetは表示が目的
-com! -bar SetpathForce let &l:path = '' | SetpathSilent | set path " 最後のsetは表示が目的
-
-" 暫定
-nnoremap <Leader>p :<C-u>ResetPath<CR>
-
-set wildignore+=**/.git/**
-set wildignore+=**/.svn/**
-
-"augroup MyVimrc_SetPathNum
-"  au!
- "au BufRead * let &l:path = &path . ',' . repeat('../', GetPrjRootNum()) . ';' | " echo &l:path
- "au BufRead * let &l:path = &path . ',' . repeat('../', GetPrjRootNum()) . '/**' | " echo &l:path
-"augroup end
-
-" SetPath }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
 " MakeTags {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " ( ctags -aR && \awk '{ print $1 }' tags > tag_only ) &
@@ -3739,29 +3627,6 @@ endif
 " ReadTag }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 
-
-function! GetPrjRootNum()
-  let save_autochdir = &autochdir
-  set autochdir
-
-  let org_dir = getcwd()
-
-  let ret = 0
-
-  for i in range(7)
-    if glob(g:prj_root_file) != ''  " prj_root_fileファイルの存在確認
-      let ret = i
-      break
-    endif
-    cd ..
-  endfor
-
-  exe 'cd ' . org_dir
-
-  let &autochdir = save_autochdir
-
-  return ret
-endfunction
 
 cabb f find
 
@@ -4119,40 +3984,6 @@ function! GLLLL()
   let wrap = !&l:wrap
   windo let &l:wrap = wrap
   PopPosAll
-endfunction
-
-
-
-" Git
-
-
-function! TestGitLsFile()
-  echo system("git ls-files")
-endfunction
-com! TGF call TestGitLsFile()
-
-
-function! GetGitRoot()
-  return system('git rev-parse --show-toplevel')
-endfunction
-
-
-python3 << PYCODE
-import subprocess
-PYCODE
-
-function! PyTestGitFile()
-python3 << PYCODE
-#git_root = subprocess.Popen(["C:/cygwin/bin/git.exe", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE, shell=True).stdout.readlines()
-git_root = subprocess.Popen(["git.exe", "rev-parse", "--show-toplevel"], stdout=subprocess.PIPE, shell=True).stdout.readlines()
-vim.command('let git_root = "' + git_root[0].decode('utf-8') + '"')
-PYCODE
-return git_root
-endfunction
-
-function! TestGitCdRoot()
-  exe 'cd ' . PyTestGitFile()
-  pwd
 endfunction
 
 
