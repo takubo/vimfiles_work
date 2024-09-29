@@ -87,4 +87,6 @@ tnoremap <S-Up>    <C-w>k
 tnoremap <S-Right> <C-w>l
 
 # Terminal Windowから抜ける。 (Windowが１つしかないなら、Tabを抜ける。)
-tnoremap <expr> <C-Tab> winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
+tnoremap <expr> <C-Tab>    winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
+tnoremap <expr> <C-t>      winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
+tnoremap <expr> <C-w><C-w> winnr('$') == 1 ? '<C-w>:tabNext<CR>' : '<C-w>p'
