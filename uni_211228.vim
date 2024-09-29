@@ -1213,59 +1213,6 @@ nnoremap <Plug>(MyVimrc-WinCmd-p) <C-w>p
 
 
 
-" Terminal {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-function! OpenTerm_Sub(key, val)
-  if bufwinnr(a:val) < 0
-    return 9999
-  endif
-  if bufwinnr(v:val) >= winnr()
-    let ret = bufwinnr(a:val) - winnr()
-  else
-    let ret = winnr('$') - winnr() + bufwinnr(a:val)
-  endif
-  return ret
-endfunction
-
-function! OpenTerm()
-  let terms = term_list()
-  "echo terms
-  call map(terms, function('OpenTerm_Sub'))
-  "echo terms
-  let minval = min(terms)
-  "echo minval
-  if minval != 0 && minval != 9999
-    exe (minval + winnr() - 1) % (winnr('$')) + 1 . ' wincmd w'
-  else
-    terminal
-    "exe "normal! \<C-w>p"
-  endif
-endfunction
-
-"nnoremap <silent> gt         :<C-u>call OpenTerm()<CR>
-"nnoremap <silent> gT         :terminal<CR>
-"nnoremap <silent> <Leader>gt :vsplit<CR>:terminal ++curwin<CR>
-
-"nnoremap <C-d> :<C-u>terminal<CR><C-w>p
-nnoremap g<C-d> :<C-u>call OpenTerm()<CR>
-
-tnoremap <C-w>; <C-w>:
-tnoremap <Esc><Esc> <C-w>N
-tnoremap <S-Ins> <C-w>"*
-"tnoremap <C-l> <C-l>
-"tnoremap <expr> <S-Del> '<C-w>:call term_sendkeys(bufnr(""), "cd " . expand("#" . winbufnr(1) . ":h"))<CR>'
-tnoremap <expr> <S-Del> 'cd ' . expand('#' . winbufnr(1) . ':p:h')
-
-for k in split('0123456789abcdefghijklmnopqrstuvwxyz', '\zs')
-  exec 'tnoremap <A-' . k . '> <Esc>' . k
-endfor
-
-nmap <expr> o &buftype == 'terminal' ? 'i' : 'o'
-
-" Terminal }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " Buffer {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 if 0
@@ -2774,7 +2721,6 @@ endif
 " Tag, Jump, and Unified CR {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Diff {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Terminal {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Buffer {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tab {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
@@ -2805,7 +2751,6 @@ endif
 " Battery {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Terminal {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Buffer {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tab {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
@@ -2850,7 +2795,6 @@ endif
 
 " Buffer {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Terminal {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tab {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
