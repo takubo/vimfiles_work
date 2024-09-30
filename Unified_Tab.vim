@@ -144,17 +144,6 @@ endfunction
 
 "---------------------------------------------------------------------------------------------
 
-nnoremap m J
-vnoremap m J
-nnoremap gm gJ
-vnoremap gm gJ
-nmap M <Plug>(MyVimrc-Window-AutoNew)
-nmap U <Plug>(MyVimrc-Window-AutoNew)
-
-
-
-"---------------------------------------------------------------------------------------------
-
 iab FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}
 iab <silent> FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}<C-R>=Eatchar('\s')<CR>
 

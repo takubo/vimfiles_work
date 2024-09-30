@@ -144,17 +144,6 @@ endfunction
 
 "---------------------------------------------------------------------------------------------
 
-nnoremap m J
-vnoremap m J
-nnoremap gm gJ
-vnoremap gm gJ
-nmap M <Plug>(MyVimrc-Window-AutoNew)
-nmap U <Plug>(MyVimrc-Window-AutoNew)
-
-
-
-"---------------------------------------------------------------------------------------------
-
 iab FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}
 iab <silent> FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}<C-R>=Eatchar('\s')<CR>
 
@@ -556,40 +545,6 @@ nnoremap <Leader><C-s> :<C-u>wind %s/<C-r>//<C-r><C-w>/g<CR>:wind up<CR><C-w>t
 "---------------------------------------------------------------------------------------------
 
 nnoremap ^ :<C-u>normal!<Space>
-
-
-
-"---------------------------------------------------------------------------------------------
-
-"nmap <C-t> <Plug>(TabSplit)
-nmap     t <Plug>(TabSplit)
-nnoremap T <C-w>T
-
-" <c-t> g<c-t> T gT
-nmap gt <Plug>(Window-Resize-OptimalWidth)
-nmap gT <C-w>=
-" nmap <Leader><Leader> <C-w>=
-
-
-
-"nmap <C-t> <Plug>(TabSplit)
-nnoremap T <C-w>T
-
-" <c-t> g<c-t> T gT
-nmap gt <Plug>(Window-Resize-OptimalWidth)
-nmap gT <C-w>=
-" nmap <Leader><Leader> <C-w>=
-nnoremap t gt
-nnoremap T gT
-
-
-
-nmap     t <Plug>(TabSplit)
-nnoremap T <C-w>T
-"nmap     <Leader><Leader> <Plug>(TabSplit)
-
-
-
 
 
 
