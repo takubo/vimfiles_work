@@ -1328,6 +1328,11 @@ endif
 
 
 "----------------------------------------------------------------------------------------
+" Battery (Battery.vimが存在しない場合に備えて。)
+let g:BatteryInfo = '? ---% [--:--:--]'
+
+
+"----------------------------------------------------------------------------------------
 " Make TabLineStr
 
 function! TabLineStr()
@@ -1502,258 +1507,6 @@ let s:TablineStatusNum = 8
 
 
 " Tabline }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-"----------------------------------------------------------------------------------------
-" Battery (Battery.vimが存在しない場合に備えて。)
-let g:BatteryInfo = '? ---% [--:--:--]'
-
-
-"----------------------------------------------------------------------------------------
-" Alt Statusline
-
-function! s:SetStatusline(stl, local, time)
-  " 旧タイマの削除
-  if a:time > 0 && exists('s:TimerUsl') | call timer_stop(s:TimerUsl) | unlet s:TimerUsl | endif
-
-  " Local Statusline の保存。および、WinLeaveイベントの設定。
-  if a:local == 'l'
-    let w:stl = getwinvar(winnr(), 'stl', &l:stl)
-    augroup MyVimrc_Restore_LocalStl
-      au!
-      au WinLeave * if exists('w:stl') | let &l:stl = w:stl | unlet w:stl | endif
-      au WinLeave * au! MyVimrc_Restore_LocalStl
-    augroup end
-  else
-    let save_cur_win = winnr()
-    windo let w:stl = getwinvar(winnr(), 'stl', &l:stl)
-    silent exe save_cur_win . 'wincmd w'
-    augroup MyVimrc_Restore_LocalStl
-      au!
-    augroup end
-  endif
-
-  " Statusline の設定
-  exe 'set' . a:local . ' stl=' . substitute(a:stl, ' ', '\\ ', 'g')
-
-  " タイマスタート
-  if a:time > 0 | let s:TimerUsl = timer_start(a:time, 'RestoreDefaultStatusline', {'repeat': v:false}) | endif
-endfunction
-
-function! RestoreDefaultStatusline(force)
-  " AltStlになっていないときは、強制フラグが立っていない限りDefaultへ戻さない。
-  if !exists('s:TimerUsl') && !a:force | return | endif
-
-  " 旧タイマの削除
-  if exists('s:TimerUsl') | call timer_stop(s:TimerUsl) | unlet s:TimerUsl | endif
-
-  " TODO これの呼び出し意図確認
-  call s:SetStatusline(s:stl, '', -1)
-
-  let save_cur_win = winnr()
-
-  " Localしか設定してないときは、全WindowのStlを再設定するより、if existsの方が速いか？
-  "windo let &l:stl = getwinvar(winnr(), 'stl', '')
-  windo if exists('w:stl') | let &l:stl = w:stl | unlet w:stl | endif
-
-  silent exe save_cur_win . 'wincmd w'
-endfunction
-
-augroup MyVimrc_Stl
-  au!
-  " このイベントがないと、AltStlが設定されているWindowを分割して作ったWindowの&l:stlに、
-  " 分割元WindowのAltStlの内容が設定されっぱなしになってしまう。
-  au WinEnter * let &l:stl = ''
-augroup end
-
-
-"----------------------------------------------------------------------------------------
-" Make Default Statusline
-
-function! s:SetDefaultStatusline(statusline_contents)
-
- "let s:stl = "  "
-  let s:stl = " "
-
- "let s:stl .= "%#SLFileName#[ %{winnr()} ]%## ( %n ) "
- "let s:stl .= "%##%m%r%{(!&autoread&&!&l:autoread)?'[AR]':''}%h%w "
-
- "let s:stl .= "%#SLFileName#[ %{winnr()} ] %#VertSplit# ( %n ) "
- "let s:stl .= "%##%m%r%{(!&autoread&&!&l:autoread)?'[AR]':''}%h%w"
-
-"?let s:stl .= "%#SLFileName# [ %{winnr()} ] %#VertSplit# ( %n ) "
-"?let s:stl .= "%#SLFileName# [ %{winnr()} ] %## ( %n ) "
-"?let s:stl .= "%#VertSplit# [ %{winnr()} ] %## ( %n ) "
-"?let s:stl .= "%##[ %{winnr()} ] %#VertSplit# ( %n ) %h%w%#SLFileName# "
-  let s:stl .= "%##[ %{winnr()} ] %#VertSplit# ( %n )%h%w %#SLFileName# "
-"?let s:stl .= "%#SLFileName# [ %{winnr()} ] %## ( %n ) %h%w%#SLFileName# "
-"?let s:stl .= " %#VertSplit# [ %{winnr()} ] %## ( %n ) %h%w%#SLFileName# "
-"?let s:stl .= " %#VertSplit# %{winnr()} %## ( %n ) %h%w%#SLFileName# "
-
-"?let s:stl .= "%#VertSplit#%m%r%{(!&l:autoread\\\<Bar>\\\<Bar>(&l:autoread==-1&&!&autoread))?'':'[AR]'}%h%w"
-  let s:stl .= "%#VertSplit#%m%r%{(!&l:autoread\\\<Bar>\\\<Bar>(&l:autoread==-1&&!&autoread))?'':'[AR]'}"
-"?let s:stl .= "%#VertSplit#%w%m%r%{(!&l:autoread\\\<Bar>\\\<Bar>(&l:autoread==-1&&!&autoread))?'':'[AR]'}"
-
-  let g:MyStlFugitive = a:statusline_contents['Branch'] ? ' [fugitive]' : ' fugitive'
-  let s:stl .= "%#hl_func_name_stl#%{bufname('') =~ '^fugitive' ? g:MyStlFugitive : ''}"
-  let s:stl .= "%#hl_func_name_stl#%{&filetype == 'fugitive' ? g:MyStlFugitive : ''}"
-
-  if a:statusline_contents['Branch']
-   "let s:stl .= "%#hl_func_name_stl# %{FugitiveHead(7)}"
-   "let s:stl .= "%#hl_func_name_stl# [%{FugitiveHead(7)}]"
-   "let s:stl .= "%#hl_func_name_stl#%{bufname('')!='' ? (' ['.FugitiveHead(7).']') : ''}"
-   "let s:stl .= "%#hl_func_name_stl#%{(bufname('')!='' && bufname('')!~'^NERD_tree') ? (' ['.FugitiveHead(7).']') : ''}"
-    let s:stl .= "%#hl_func_name_stl#%{(FugitiveHead(7)!=''&& bufname('')!~'^NERD_tree') ? (' ['.FugitiveHead(7).']') : ''}"
-  elseif 0
-    let s:stl .= "%#hl_func_name_stl#%{(FugitiveHead(7)!='' && FugitiveHead(7)!='master' && bufname('')!~'^NERD_tree') ? (' ['.FugitiveHead(7).']') : ''}"
-  endif
-
-  if a:statusline_contents['Path']
-    let s:stl .= "%<"
-    let s:stl .= "%##%#SLFileName# %F "
-  else
-  "?let s:stl .= "%##%#SLFileName# %t "
-    let s:stl .= "%##%#SLFileName#  %t  "
-    let s:stl .= "%<"
-  endif
- "let s:stl .= "%#hl_func_name_stl#%{ bufname('') == '' ? getcwd(winnr()) : '' }"
- "let s:stl .= "%#SLFileName#%{ bufname('') == '' ? getcwd(winnr()) : '' }"
- if a:statusline_contents['ShadowPath'] && !a:statusline_contents['Path']
-   if 0
-    "let s:stl .= " %#SLNoNameDir#%{ getcwd(winnr()) }    "
-     let s:stl .= " %#SLNoNameDir#%F    "
-   else
-   "?let s:stl .= " %#SLNoNameDir#%F"
-     let s:stl .= "%#SLNoNameDir#%F"
-     let s:stl .= "%{bufname('')=='' ? ' '.getcwd(winnr()) : ''}"
-     let s:stl .= "    "
-   endif
- else
-   " 無名レジスタなら、常にcwdを表示。
-   let s:stl .= "%#SLNoNameDir#%{ bufname('') == '' ? getcwd(winnr()) : '' }"
- endif
- "let s:stl .= "%#SLNoNameDir#%{  getcwd(winnr())  }"
-
-  if a:statusline_contents['FuncName']
-   "let s:stl .= "%#hl_func_name_stl# %{cfi#format('%s()', '')}"
-    let s:stl .= "%#hl_func_name_stl#%{cfi#format('%s()', '')}"
-  endif
-
-
-  " ===== Separate Left Right =====
-  let s:stl .= "%#SLFileName#%="
-  " ===== Separate Left Right =====
-
-  if a:statusline_contents['IsKeywords']
-   "let s:stl .= " %1{stridx(&isk,'.')<0?' ':'.'} %1{stridx(&isk,'_')<0?' ':'_'} "
-   "let s:stl .= " %{&isk} "
-   "let s:stl .= " %{substitute(substitute(&isk, '\\\\d\\\\+-\\\\d\\\\+', '', 'g'), ',,\\\\+', ',', 'g')} "
-    let s:stl .= " %{substitute(substitute(&isk, '\\\\d\\\\+-\\\\d\\\\+', '', 'g'), ',\\\\+', ' ', 'g')} "
-  endif
-
-  if 1
-   "let s:stl .= "%## %-3{ &ft == '' ? '    ' : &ft }  %-5{ &fenc == '' ? '     ' : &fenc }  %4{ &ff } "
-   "let s:stl .= "%## %-3{ &ft == '' ? '    ' : &ft }  %-5{ &fenc == '' ? 'ascii' : &fenc }  %4{ &ff } "
-   "let s:stl .= "%## %-3{ &ft == '' ? '?  ' : TitleCase(&ft) }  %-5{ &fenc == '' ?  &enc   : TitleCase(&fenc) }  %4{ TitleCase(&ff) } "
-    let s:stl .= "%## %-3{ &ft == '' ? '?  ' : ToCapital(&ft) }  %-5{ &fenc == '' ?  &enc   : toupper(&fenc) }  %4{ ToCapital(&ff) } "
-  else
-    let s:stl .= "%## %-3{ &ft == '' ? '    ' : &ft } "
-    let s:stl .= "%## %-5{ &fenc == '' ? '     ' : &fenc } "
-    let s:stl .= "%## %4{ &ff } "
-  endif
-
- "let s:stl .= "%#SLFileName# %{&l:scrollbind?'$':'@'} "
-  let s:stl .= "%#VertSplit# %{&l:scrollbind?'$':'@'} "
-  let s:stl .= "%1{ c_jk_local != 0 ? 'L' : 'G' } %1{ &l:wrap ? '==' : '>>' } %{g:clever_f_use_migemo?'(M)':'(F)'} %4{ &iminsert ? 'Jpn' : 'Code' } "
-
-  let s:stl .= "%#SLFileName#  %{repeat(' ',winwidth(0)-178)}"
-
-  let s:stl .= "%##"
- "let s:stl .= "%#VertSplit#"
-  if a:statusline_contents['Line']
-    let s:stl .= " %3p%% [%4L]"
-  endif
-
-  if a:statusline_contents['LinePercent'] && !a:statusline_contents['Line']
-    let s:stl .= " %3p%%"
-  endif
-
-  if a:statusline_contents['LineColumn']
-    let s:stl .= " %4lL, %3c(%3v)C"
-  elseif a:statusline_contents['Column']
-   "let s:stl .= " %3c,%3v "
-    let s:stl .= " %3c(%3v)"
-  endif
-
-  if a:statusline_contents['TabStop']
-    let s:stl .= " ⇒%{&l:tabstop}"
-  endif
-
-  if a:statusline_contents['WordLen']
-   "let s:stl .= " ≪%2{len(expand('<cword>'))}≫"
-    let s:stl .= " %4{'≪'.len(expand('<cword>'))}≫"
-  endif
-
-  " Line系の末尾にスペースを置かないため。
-  let s:stl .= " "
-
-  call RestoreDefaultStatusline(v:true)
-endfunction
-
-
-"----------------------------------------------------------------------------------------
-" Switch Statusline Contents
-
-let g:StatuslineContents = {}
-
-let g:StatuslineContents['Branch']      = v:false
-let g:StatuslineContents['Column']      = v:true
-let g:StatuslineContents['FuncName']    = v:false
-let g:StatuslineContents['IsKeywords']  = v:false
-let g:StatuslineContents['Line']        = v:false
-let g:StatuslineContents['LinePercent'] = v:true
-let g:StatuslineContents['LineColumn']  = v:false
-let g:StatuslineContents['Path']        = v:false
-let g:StatuslineContents['ShadowPath']  = v:true
-let g:StatuslineContents['TabStop']     = v:false
-let g:StatuslineContents['WordLen']     = v:false
-
-function! s:CompletionStlContents(ArgLead, CmdLine, CusorPos)
-  return sort(keys(g:StatuslineContents))
-endfunction
-com! -nargs=1 -complete=customlist,s:CompletionStlContents Stl let g:StatuslineContents['<args>'] = !g:StatuslineContents['<args>'] | call <SID>SetDefaultStatusline(g:StatuslineContents)
-
-" nnoremap <silent> <Leader>_ :<C-u>Stl Column<CR>
-" nnoremap <silent> <Leader>. :<C-u>Stl Branch<CR>
-" nnoremap <silent> <Leader>, :<C-u>Stl FuncName<CR>
-" nnoremap <silent> <Leader>+ :<C-u>Stl Line<CR>
-" nnoremap <silent> <Leader>- :<C-u>Stl Path<CR>
-
-
-"----------------------------------------------------------------------------------------
-" Initialize Statusline
-
-" 初期設定のために1回は呼び出す。
-call s:SetDefaultStatusline(g:StatuslineContents)
-
-
-"----------------------------------------------------------------------------------------
-" Alt-Statusline API
-
-function! SetAltStatusline(stl, local, time)
-  call s:SetStatusline(a:stl, a:local, a:time)
-endfunction
-
-function! AddAltStatusline(stl, local, time)
-  call s:SetStatusline((a:local == 'l' ? &l:stl : &stl) . a:stl, a:local, a:time)
-endfunction
-
-
-" Statusline }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 
 
@@ -2713,7 +2466,6 @@ endif
 " Buffer {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tab {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Battery {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Unified_Space {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Mru {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
@@ -2736,7 +2488,6 @@ endif
 " Unified_Space {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Battery {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
@@ -2786,7 +2537,6 @@ endif
 " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tab {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Battery {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Snippets {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{

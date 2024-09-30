@@ -1116,183 +1116,6 @@ set tabline=%!TabLineStr()
 
 
 
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-"----------------------------------------------------------------------------------------
-" Battery (Battery.vimが存在しない場合に備えて。)
-let g:BatteryInfo = '? ---% [--:--:--]'
-
-
-"----------------------------------------------------------------------------------------
-" Alt Statusline
-
-function! s:SetStatusline(stl, local, time)
-  " 旧タイマの削除
-  if a:time > 0 && exists('s:TimerUsl') | call timer_stop(s:TimerUsl) | unlet s:TimerUsl | endif
-
-  " Local Statusline の保存。および、WinLeaveイベントの設定。
-  if a:local == 'l'
-    let w:stl = getwinvar(winnr(), 'stl', &l:stl)
-    augroup MyVimrc_Restore_LocalStl
-      au!
-      au WinLeave * if exists('w:stl') | let &l:stl = w:stl | unlet w:stl | endif
-      au WinLeave * au! MyVimrc_Restore_LocalStl
-    augroup end
-  else
-    let save_cur_win = winnr()
-    windo let w:stl = getwinvar(winnr(), 'stl', &l:stl)
-    silent exe save_cur_win . 'wincmd w'
-    augroup MyVimrc_Restore_LocalStl
-      au!
-    augroup end
-  endif
-
-  " Statusline の設定
-  exe 'set' . a:local . ' stl=' . substitute(a:stl, ' ', '\\ ', 'g')
-
-  " タイマスタート
-  if a:time > 0 | let s:TimerUsl = timer_start(a:time, 'RestoreDefaultStatusline', {'repeat': v:false}) | endif
-endfunction
-
-function! RestoreDefaultStatusline(force)
-  " AltStlになっていないときは、強制フラグが立っていない限りDefaultへ戻さない。
-  if !exists('s:TimerUsl') && !a:force | return | endif
-
-  " 旧タイマの削除
-  if exists('s:TimerUsl') | call timer_stop(s:TimerUsl) | unlet s:TimerUsl | endif
-
-  " TODO これの呼び出し意図確認
-  call s:SetStatusline(s:stl, '', -1)
-
-  let save_cur_win = winnr()
-
-  " Localしか設定してないときは、全WindowのStlを再設定するより、if existsの方が速いか？
-  "windo let &l:stl = getwinvar(winnr(), 'stl', '')
-  windo if exists('w:stl') | let &l:stl = w:stl | unlet w:stl | endif
-
-  silent exe save_cur_win . 'wincmd w'
-endfunction
-
-augroup MyVimrc_Stl
-  au!
-  " このイベントがないと、AltStlが設定されているWindowを分割して作ったWindowの&l:stlに、
-  " 分割元WindowのAltStlの内容が設定されっぱなしになってしまう。
-  au WinEnter * let &l:stl = ''
-augroup end
-
-
-"----------------------------------------------------------------------------------------
-" Make Default Statusline
-
-function! s:SetDefaultStatusline(statusline_contents)
-
-  let s:stl = "  "
-  let s:stl .= "%#SLFileName#[ %{winnr()} ]%## ( %n ) "
-  let s:stl .= "%##%m%r%{(!&autoread&&!&l:autoread)?'[AR]':''}%h%w "
-
-  let g:MyStlFugitive = a:statusline_contents['Branch'] ? ' [fugitive]' : ' fugitive'
-  let s:stl .= "%#hl_func_name_stl#%{bufname('') =~ '^fugitive' ? g:MyStlFugitive : ''}"
-  let s:stl .= "%#hl_func_name_stl#%{&filetype == 'fugitive' ? g:MyStlFugitive : ''}"
-
-  if a:statusline_contents['Branch']
-    let s:stl .= "%#hl_func_name_stl# %{FugitiveHead(7)}"
-  endif
-
-  if a:statusline_contents['Path']
-    let s:stl .= "%<"
-    let s:stl .= "%##%#SLFileName# %F "
-  else
-    let s:stl .= "%##%#SLFileName# %t "
-    let s:stl .= "%<"
-  endif
-
-  if a:statusline_contents['FuncName']
-    let s:stl .= "%#hl_func_name_stl# %{cfi#format('%s()', '')}"
-  endif
-
-
-  " ===== Separate Left Right =====
-  let s:stl .= "%#SLFileName#%="
-  " ===== Separate Left Right =====
-
-  if a:statusline_contents['Keywords']
-   "let s:stl .= " %1{stridx(&isk,'.')<0?' ':'.'} %1{stridx(&isk,'_')<0?' ':'_'} "
-   "let s:stl .= " %{&isk} "
-   "let s:stl .= " %{substitute(substitute(&isk, '\\\\d\\\\+-\\\\d\\\\+', '', 'g'), ',,\\\\+', ',', 'g')} "
-    let s:stl .= " %{substitute(substitute(&isk, '\\\\d\\\\+-\\\\d\\\\+', '', 'g'), ',\\\\+', ' ', 'g')} "
-  endif
-
-  let s:stl .= "%## %-4{&ft==''?'    ':&ft}  %-5{&fenc==''?'     ':&fenc}  %4{&ff} "
-
-  let s:stl .= "%#SLFileName# %{&l:scrollbind?'$':'@'} "
-  let s:stl .= "%1{c_jk_local!=0?'L':'G'} %1{&l:wrap?'==':'>>'} %{g:clever_f_use_migemo?'(M)':'(F)'} %4{&iminsert?'Jpn':'Code'} "
-
-  let s:stl .= "%#SLFileName#  %{repeat(' ',winwidth(0)-178)}"
-
-  let s:stl .= "%## %3p%% [%4L] "
-
-  if a:statusline_contents['LineColumn']
-    let s:stl .= "%## %4lL, %3v(%3c)C "
-  elseif a:statusline_contents['Column']
-    let s:stl .= "%## %3v,%3c "
-  endif
-
-  if a:statusline_contents['TabStop']
-    let s:stl .= "%## %{&l:tabstop} "
-  endif
-
-  call RestoreDefaultStatusline(v:true)
-endfunction
-
-
-"----------------------------------------------------------------------------------------
-" Switch Statusline Contents
-
-let g:StatuslineContents = {}
-
-let g:StatuslineContents['Column'] = v:false
-let g:StatuslineContents['Branch'] = v:false
-let g:StatuslineContents['FuncName'] = v:false
-let g:StatuslineContents['Keywords'] = v:false
-let g:StatuslineContents['LineColumn'] = v:false
-let g:StatuslineContents['Path'] = v:false
-let g:StatuslineContents['TabStop'] = v:false
-
-function! CompletionStlContents(ArgLead, CmdLine, CusorPos)
-  return join(keys(g:StatuslineContents),"\n")
-endfunction
-com! -nargs=1 -complete=custom,CompletionStlContents Stl let g:StatuslineContents['<args>'] = !g:StatuslineContents['<args>'] | call <SID>SetDefaultStatusline(g:StatuslineContents)
-
-nnoremap <silent> <Leader>_ :<C-u>Stl Column<CR>
-nnoremap <silent> <Leader>. :<C-u>Stl Branch<CR>
-nnoremap <silent> <Leader>, :<C-u>Stl FuncName<CR>
-nnoremap <silent> <Leader>- :<C-u>Stl Path<CR>
-
-
-"----------------------------------------------------------------------------------------
-" Initialize Statusline
-
-" 初期設定のために1回は呼び出す。
-call s:SetDefaultStatusline(g:StatuslineContents)
-
-
-"----------------------------------------------------------------------------------------
-" Alt-Statusline API
-
-function! SetAltStatusline(stl, local, time)
-  call s:SetStatusline(a:stl, a:local, a:time)
-endfunction
-
-function! AddAltStatusline(stl, local, time)
-  call s:SetStatusline((a:local == 'l' ? &l:stl : &stl) . a:stl, a:local, a:time)
-endfunction
-
-
-" Statusline }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " Unified_Space {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 "
 nmap <expr> <Space>   winnr('$') == 1 ? '<Plug>(ComfortableMotion-Flick-Down)' : '<Plug>(Window-Focus-SkipTerm-Inc)'
@@ -1921,7 +1744,6 @@ endif
 " Buffer {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tab {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Battery {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Unified_Space {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Mru {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
@@ -1944,7 +1766,6 @@ endif
 " Unified_Space {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Tabline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" Statusline {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Battery {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Window {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
