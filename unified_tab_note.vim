@@ -251,20 +251,6 @@ endfunction
 
 "---------------------------------------------------------------------------------------------
 
-" コマンドラインで、"<Space>"を入力しやすくする。
-cnoremap <expr> <C-v><Space> '<' . 'Space' . '>'
-
-
-
-"---------------------------------------------------------------------------------------------
-
-" 無名バッファなら、pwd。そうでなければ、保存。
-nnoremap <expr> <silent> <leader>w bufname() == '' ? ':<C-u>pwd<CR>' : ':<C-u>update<CR>'
-
-
-
-"---------------------------------------------------------------------------------------------
-
 "? cmap <expr> <CR> ( getcmdtype() == '/' ) ?
 "?                \ ( '<Plug>(Search-SlashCR)' ) :
 "?                \ ( getcmdtype() == ':' && getcmdline() =~# '^:*cd ') ?
@@ -372,25 +358,6 @@ endfunction
 
 "---------------------------------------------------------------------------------------------
 
-nnoremap ' "
-vnoremap ' "
-nnoremap '' "0
-vnoremap '' "0
-
-nnoremap " '
-vnoremap " '
-nnoremap ` m
-vnoremap ` m
-
-
-"---------------------------------------------------------------------------------------------
-inoremap $$ ${}<LEFT>
-inoremap HH ${}<LEFT>
-
-
-
-"---------------------------------------------------------------------------------------------
-
 " ^に、|の機能を付加
 "nnoremap <silent> U <Esc>:exe v:prevcount ? ('normal! ' . v:prevcount . '<Bar>') : 'normal! ^'<CR>
 "nnoremap <expr> <silent> U v:prevcount ? (v:prevcount . '<Bar>') : '^'
@@ -429,15 +396,6 @@ vnoremap gU U
 " nnoremap $ <Nop>
 " vnoremap ^ <Nop>
 " vnoremap $ <Nop>
-
-
-
-"---------------------------------------------------------------------------------------------
-
-onoremap ia iW
-onoremap aa aW
-vnoremap ia iW
-vnoremap aa aW
 
 
 
@@ -569,11 +527,6 @@ nnoremap ^ :<C-u>normal!<Space>
 " ファイル内全てのシンボルを置換
 nnoremap <silent> <Leader>S :<C-u>PushPos<CR>:g$.$s    /<C-r>//<C-r><C-w>/g<CR>:PopPos<CR>:let @/='<C-r><C-w>'<CR>
 nmap gS <Leader>S
-
-
-
-"---------------------------------------------------------------------------------------------
-nnoremap ZZ zi
 
 
 

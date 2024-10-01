@@ -6,9 +6,6 @@ scriptencoding utf-8
 set runtimepath^=~/vim/runtime
 let $VIM = '~/vim/runtime'
 
-let mapleader = ' '
-
-
 if !isdirectory($HOME . "/vim_buckup")
   call mkdir($HOME . "/vim_buckup")
 endif
@@ -159,125 +156,6 @@ packadd vim-submode
 
 
 
-" Basic {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-nnoremap Y y$
-
-
-" US Keyboard {{{
-
-noremap ; :
-
-" ; を連続で押してしまったとき用。
-cnoremap <expr> ; getcmdline() =~# '^:*$' ? ':' : ';'
-cnoremap <expr> : getcmdline() =~# '^:*$' ? ';' : ':'
-
-" US Keyboard }}}
-
-
-nnoremap <silent> ZZ <Nop>
-nnoremap <silent> ZQ <Nop>
-
-
-nmap <silent> W <Plug>CamelCaseMotion_w
-nmap <silent> B <Plug>CamelCaseMotion_b
-if 0
-  nnoremap E ge
-  "nmap <silent> ge <Plug>CamelCaseMotion_e
-  "nmap <silent> gE <Plug>CamelCaseMotion_ge
-else
-  nmap E  <Plug>CamelCaseMotion_e
-  nmap gE <Plug>CamelCaseMotion_ge
-
-  call submode#enter_with('ge', 'n', '', 'ge', 'ge')
-  call submode#map(       'ge', 'n', '', 'e',  'ge')
-  call submode#map(       'ge', 'n', '', 'E',  'e')
-  call submode#enter_with('gE', 'n', 'r', 'gE', '<Plug>CamelCaseMotion_ge')
-  call submode#map(       'gE', 'n', 'r', 'E',  '<Plug>CamelCaseMotion_ge')
-  call submode#map(       'gE', 'n', 'r', 'e',  '<Plug>CamelCaseMotion_e')
-endif
-
-
-cnoremap <expr> <C-t> getcmdtype() == ':' ? '../' : '<C-t>'
-cnoremap <expr> <C-^> getcmdtype() == ':' ? '../' : '<C-^>'
-
-
-nnoremap g4 g$
-nnoremap g6 g^
-
-nnoremap ]3 ]#
-nnoremap [3 [#
-
-nnoremap ]8 ]*
-nnoremap [8 [*
-
-
-function! s:SwitchLineNumber()
-  if !&l:number && !&l:relativenumber
-    let &numberwidth = 3
-    let &l:number = 1
-  elseif &l:number && !&l:relativenumber
-    let &numberwidth = 1
-    let &l:relativenumber = 1
-  else
-    let &l:number = 0
-    let &l:relativenumber = 0
-  endif
-endfunction
-
-nnoremap <silent> <Leader>@ :<C-u>call <SID>SwitchLineNumber()<CR>
-nmap <Leader>2 <Leader>@
-
-
-" コメント行の後の新規行の自動コメント化のON/OFF
-nnoremap <expr> <Leader>#&formatoptions =~# 'o' ?
-      \ ':<C-u>set formatoptions-=o<CR>:set formatoptions-=r<CR>' :
-      \ ':<C-u>set formatoptions+=o<CR>:set formatoptions+=r<CR>'
-nmap <Leader>3 <Leader>#
-
-
-vnoremap af ][<ESC>V[[
-vnoremap if ][k<ESC>V[[j
-
-
-nnoremap <silent> +  :echo '++ ' <Bar> exe 'setl isk+=' . GetKeyEcho()<CR>
-nnoremap <silent> -  :echo '-- ' <Bar> exe 'setl isk-=' . GetKeyEcho()<CR>
-nnoremap <silent> z+ :exe 'setl isk+=' . substitute(input('isk++ '), '.\($\)\@!', '&,', 'g')<CR>
-nnoremap <silent> z- :exe 'setl isk-=' . substitute(input('isk-- '), '.\($\)\@!', '&,', 'g')<CR>
-nnoremap <silent> z= :exe 'setl isk+=' . substitute(input('isk++ '), '.\($\)\@!', '&,', 'g')<CR>
-
-
-" Basic }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" Text_Objects {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-nnoremap cr ciw
-nnoremap dr diw
-nnoremap yr yiw
-
-nnoremap cs caw
-nnoremap ds daw
-nnoremap ys yaw
-
-"nnoremap cu ciw
-"nnoremap du daw
-"nnoremap yu yiw
-
-" 括弧(Kakko)
-onoremap ik i(
-onoremap ak a(
-
-" Double Quote
-onoremap id i"
-onoremap ad a"
-
-" Text_Objects }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " Cursor Move, CursorLine, CursorColumn, and Scroll {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 
@@ -402,50 +280,6 @@ augroup end
 
 
 " Cursor Move, CursorLine, CursorColumn, and Scroll }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" Emacs {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-" コマンドラインでのキーバインドを Emacs スタイルにする
-" 行頭へ移動
-cnoremap <C-a>		<Home>
-" 一文字戻る
-cnoremap <C-b>		<Left>
-" カーソルの下の文字を削除
-cnoremap <C-d>		<Del>
-" 行末へ移動
-cnoremap <C-e>		<End>
-" 一文字進む
-cnoremap <C-f>		<Right>
-" コマンドライン履歴を一つ進む
-cnoremap <C-n>		<Down>
-" コマンドライン履歴を一つ戻る
-cnoremap <C-p>		<Up>
-" Emacs Yank
-cnoremap <C-y> <C-R><C-O>*
-" 次の単語へ移動
-cnoremap <A-f>		<S-Right>
-"cnoremap <Esc>f		<S-Right>
-" 前の単語へ移動
-cnoremap <A-b>		<S-Left>
-" 単語削除
-"cnoremap <A-d>		TODO
-" Emacs }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" EscEsc {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-nmap <Esc><Esc> <Plug>(EscEsc)
-
-if !exists('s:EscEsc_Add_Done')
-  " おかしくなったときにEscEscで復帰できるように、念のためforceをTrueにして呼び出す。
-  call EscEsc_Add('call RestoreDefaultStatusline(v:true)')
-  call EscEsc_Add('call clever_f#reset()')
-endif
-let s:EscEsc_Add_Done = v:true
-
-" EscEsc }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 
 
@@ -1065,7 +899,7 @@ nnoremap <expr> <silent> <Leader>V
 
 
 
-" Swap Exists {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
+" Swap_Exists {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 let s:swap_select = v:false
 
@@ -1082,39 +916,7 @@ endfunction
 
 com! SwapSelect call s:swap_select()
 
-" Swap Exists }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
-" Other Key-Maps {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-nnoremap <leader>w :<C-u>w<CR>
-nnoremap <silent><expr> <Leader>r &l:readonly ? ':<C-u>setl noreadonly<CR>' : ':<C-u>setl readonly<CR>'
-nnoremap <silent><expr> <Leader>R &l:modifiable ? ':<C-u>setl nomodifiable <BAR> setl readonly<CR>' : ':<C-u>setl modifiable<CR>'
-nnoremap <leader>L :<C-u>echo len("<C-r><C-w>")<CR>
-nnoremap <silent> yx :PushPos<CR>ggyG:PopPos<CR> | ":echo "All lines yanked."<CR>
-
-"nnoremap <silent> <C-o> :<C-u>exe (g:alt_stl_time > 0 ? '' : 'normal! <C-l>')
-"                      \ <Bar> let g:alt_stl_time = 12
-nnoremap <silent> g<C-o> :<C-u>pwd
-                      \ <Bar> echon '        ' &fileencoding '  ' &fileformat '  ' &filetype '    ' printf('L %d  C %d  %3.2f %%  TL %3d', line('.'), col('.'), line('.') * 100.0 / line('$'), line('$'))
-                      \ <Bar> call SetAltStatusline('%#hl_buf_name_stl#  %F', 'g', 10000)<CR>
-
-
-"nnoremap <C-Tab> <C-w>p
-inoremap <C-f> <C-p>
-inoremap <C-e>	<End>
-"inoremap <CR> <C-]><C-G>u<CR>
-inoremap <C-H> <C-G>u<C-H>
-
-nnoremap <silent> gl :setl nowrap!<CR>
-nnoremap <silent> <Leader><CR> :setl nowrap!<CR>
-
-nnoremap gG G
-
-nnoremap <silent> gf :<C-u>aboveleft sp<CR>gF
-
-" Other Key-Maps }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
+" Swap_Exists }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
 
 
 
@@ -1397,7 +1199,6 @@ augroup end
 
 
 
-nnoremap <Leader>j       :<C-u>let &iminsert = (&iminsert ? 0 : 2) <Bar> exe "colorscheme " . (&iminsert ? "Asche" : "Rimpa") <CR>
 
 
 
@@ -1436,11 +1237,6 @@ nnoremap <silent> <Leader>d :<C-u>call RefactorLocalSymbol()<CR>
 nnorema <silent> <Leader>D :<C-u>PushPos<CR>:g$.$s    /<C-r>//<C-r><C-w>/g<CR>:PopPos<CR>:let @/='<C-r><C-w>'<CR>
 
 " Refactoring  }}}
-
-
-
-nnoremap <C-@> g-
-nnoremap <C-^> g+
 
 
 
@@ -1485,11 +1281,6 @@ command! HighlightInfo call s:get_highlight_info()
 
 
 
-nnoremap <Leader>$ :<C-u>setl scrollbind!<CR>
-nmap <Leader>4 <Leader>$
-
-
-
 " {{{
 function! SurroundLineBrace() range
 " echo a:firstline a:lastline
@@ -1525,19 +1316,6 @@ vnoremap J :Brace<CR>
 
 
 
-"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-if 0
-  nnoremap <C-i> g;
-  nnoremap <C-o> g,
-
-  nmap ' \
-
-  set whichwrap+=hl
-endif
-"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-
-
 " Basic {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Cursor Move, CursorLine, CursorColumn, and Scroll {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 " Emacs {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
@@ -1600,18 +1378,11 @@ endif
 " Other Key-Maps {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 " Util {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-
-"nnoremap <silent> <C-o> o<Esc>
-"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 
 nnoremap go :<C-u>MRU<Space>
 nnoremap gO :<C-u>MRU<CR>
-nnoremap gw :<C-u>w<CR>
-nmap gr <Leader>e
 nmap gt <Plug>(PrjTree-MyExplore)
 
 
@@ -1619,32 +1390,6 @@ nmap gt <Plug>(PrjTree-MyExplore)
 let g:submode_timeoutlen = 5000
 
 
-
-" {{{
-
-let s:IsSpaceFree = v:false
-
-if s:IsSpaceFree
-
-  nnoremap <Space>w :<C-u>w<CR>
-  nnoremap <Space>o :<C-u>MRU<Space>
-
-  nmap <Space>v <Leader>v
-  nmap <Space>V <Leader>V
-
-  nmap <Leader>e <Nop>
-  nmap <silent> <Space>e <Leader>e
-
-  nmap <Space>- <Leader>-
-  nmap <Space>_ <Leader>_
-
-  nmap <Space>t <Leader>t
-
-  nmap <Space><Space> <Leader><Space>
-
-endif
-
-" }}}
 
 
 
