@@ -91,27 +91,6 @@ nnoremap <silent> <Leader><Tab> :<C-u>cc<CR>
 
 
 "---------------------------------------------------------------------------------------------
-com! IIG InsertIncludeGurd
-com! InsertIncludeGurd call s:InsertIncludeGurd()
-
-
-function! s:InsertIncludeGurd()
-  let fn = expand('%')
-  let fn = toupper(fn)
-  let fn = substitute(fn, '\W', '_', 'g')
-  let fn = (exists('g:IncludeGuardPrefix') ? g:IncludeGuardPrefix : '') . fn
-  let fn0 = "#ifndef\t" . fn
-  let fn1 = "#define\t" . fn
-  let fn2 = "#endif\t/* " . fn . " */"
-  call append(0, fn0)
-  call append(1, fn1)
-  call append(line('$'), fn2)
-  echo fn
-endfunction
-
-
-
-"---------------------------------------------------------------------------------------------
 
 " com! -nargs=? -complete=customlist,s:CompletionTabline Tabline call <SID>ToggleTabline(<args>)
 
@@ -161,94 +140,6 @@ vnoremap <Leader><C-s>                :g!<C-r>/!<Space>
 
 "---------------------------------------------------------------------------------------------
 
-let s:Ind = 4
-
-function! IfStruct()
-  let ind = -s:Ind
-  for i in range(1, line('$'))
-    let c = getline(i)
-
-    if c =~# 'T_PortLvdsCfg'
-      "echo repeat(' ', ind < 0 ? 0 : s:Ind * ind) . '........................................'
-      echo repeat(' ', s:Ind + ind) . '........................................'
-    endif
-    if i == line('.')
-      "echo repeat(' ', ind < 0 ? 0 : s:Ind * ind) . '........................................'
-    endif
-
-    if     c =~# '^\s*#\s*if'
-      let ind += s:Ind
-    elseif c =~# '^\s*#\s*elif'
-    elseif c =~# '^\s*#\s*else'
-    elseif c =~# '^\s*#\s*endif'
-    else
-      continue
-    endif
-    echo repeat(' ', s:Ind * ind) . c
-
-    if     c =~# '^\s*#\s*endif'
-      " 見やすいように、endifの後には空行を出力。
-      echo "\n"
-      let ind -= s:Ind
-    endif
-  endfor
-endfunction
-
-function! IfStruct()
-  let ind = -s:Ind
-  for i in range(1, line('$'))
-    let c = getline(i)
-
-    if c =~# 'T_PortLvdsCfg'
-      echo repeat(' ', ind + s:Ind) . "T_PortLvdsCfg"
-    endif
-    if i == line('.')
-      "echo repeat(' ', ind + s:Ind) . '........................................'
-    endif
-
-    if     c =~# '^\s*#\s*if'
-      let ind += s:Ind
-    elseif c =~# '^\s*#\s*elif'
-    elseif c =~# '^\s*#\s*else'
-    elseif c =~# '^\s*#\s*endif'
-    else
-      continue
-    endif
-    echo repeat(' ', ind) . c
-
-    if     c =~# '^\s*#\s*endif'
-      " 見やすいように、endifの後には空行を出力。
-      echo "\n"
-      let ind -= s:Ind
-    endif
-  endfor
-endfunction
-
-com! IfStruct call IfStruct()
-
-
-com! IfS call s:cmd_out_capture()
-
-function! s:cmd_out_capture()
-  new
-  silent put =execute('IfStruct')
-  1,2delete _
-endfunction
-
-
-function! s:CommnadOutput()
-  redir => result
-  silent execute 'IfStruct'
-  redir END
-  return result
-endfunction
-
-" let @*=execute('IfStruct')
-
-
-
-"---------------------------------------------------------------------------------------------
-
 cmap <expr> <CR> ( getcmdtype() == '/' ) ?
                \ ( '<Plug>(Search-SlashCR)' ) :
                \ ( getcmdtype() == ':' && getcmdline() =~# '^:*cd \?') ?
@@ -256,53 +147,6 @@ cmap <expr> <CR> ( getcmdtype() == '/' ) ?
                \ ( getcmdtype() == ':' && getcmdline() =~# '^:*lcd\? *$') ?
                \ ( '<C-e><C-u>echo "引数なしのlcdは使用禁止。pw[d]を使用。"<CR>' ) :
                \ ( '<CR>' )
-
-
-
-"---------------------------------------------------------------------------------------------
-
-nnoremap <Leader><C-p> :<C-u>call <SID>next_nonamebuf(-1)<CR>
-nnoremap <Leader><C-n> :<C-u>call <SID>next_nonamebuf(+1)<CR>
-
-function! s:next_nonamebuf(n)
-  let first_buf = 1
-  let cur_buf = bufnr()
-  let last_buf = bufnr('$')
-
-  if a:n > 0
-    let sta1 = cur_buf + 1
-    let end1 = last_buf
-
-    let sta2 = first_buf
-    let end2 = cur_buf - 1
-
-    let dis = +1
-  else
-    let sta1 = cur_buf - 1
-    let end1 = first_buf
-
-    let sta2 = last_buf
-    let end2 = cur_buf + 1
-
-    let dis = -1
-  endif
-
-  if !s:next_nonamebuf_sub(sta1, end1, dis)
-    call s:next_nonamebuf_sub(sta2, end2, dis)
-  endif
-endfunction
-
-function! s:next_nonamebuf_sub(sta, end, dis )
-  "echo  a:sta a:end a:dis
-  for i in range(a:sta, a:end, a:dis)
-    "echo i bufname(i)
-    if buflisted(i) && bufname(i) == '' " && buf modified
-      exe 'b' i
-      return v:true
-    endif
-  endfor
-  return v:false
-endfunction
 
 
 

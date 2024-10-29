@@ -1139,43 +1139,6 @@ endfunction
 
 
 
-" Util Commands {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-
-"com! AR setl autoread!
-com! AR let &l:autoread = !&l:autoread
-
-
-com! Tab2Space setlocal   expandtab | retab<CR>
-com! Space2Tab setlocal noexpandtab | retab!<CR>
-com! T2S Tab2Space
-com! S2T Space2Tab
-
-
-com! FL help function-list<CR>
-
-
-com! -nargs=1 Unicode exe 'normal! o<C-v>u' . tolower('<args>') . '<Esc>'
-
-
-com! XMLShape :%s/></>\r</g | filetype indent on | setf xml | normal gg=G
-
-
-" Windowsでの設定例です。他の場合は外部コマンド部分を読み替えてください。
-au FileType plantuml com! OpenUml :!/cygdrive/c/Program\ Files/Google/Chrome/Application/chrome.exe %
-
-
-" ifdefを閉じる
-com! FoldIfdef setl foldmarker=#if,#endif | setl foldmethod=marker | normal! zM
-
-
-com! Branch echo FugitiveHead(7)
-
-
-" Util Commands }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 set renderoptions=type:directx,scrlines:1
 
 
@@ -1260,42 +1223,6 @@ let plugin_dicwin_disable = v:true
 
 
 ru! ftplugin/man.vim
-
-
-
-"-------------------------------------------------------------------
-" カーソル下のhighlight情報を表示する {{{
-function! s:get_syn_id(transparent)
-    let synid = synID(line('.'), col('.'), 1)
-    return a:transparent ? synIDtrans(synid) : synid
-endfunction
-function! s:get_syn_name(synid)
-    return synIDattr(a:synid, 'name')
-endfunction
-function! s:get_highlight_info()
-    execute "highlight " . s:get_syn_name(s:get_syn_id(0))
-    execute "highlight " . s:get_syn_name(s:get_syn_id(1))
-endfunction
-command! HighlightInfo call s:get_highlight_info()
-"-------------------------------------------------------------------
-
-
-
-" {{{
-function! SurroundLineBrace() range
-" echo a:firstline a:lastline
-" red
-" sleep 2
-  exe a:lastline
-  normal! o}
-  exe a:firstline
-  normal! O{
-  normal! j>i{>a{
-endfunction
-
-com! -range Brace <line1>,<line2>call SurroundLineBrace()
-vnoremap J :Brace<CR>
-" }}}
 
 
 

@@ -91,27 +91,6 @@ nnoremap <silent> <Leader><Tab> :<C-u>cc<CR>
 
 
 "---------------------------------------------------------------------------------------------
-com! IIG InsertIncludeGurd
-com! InsertIncludeGurd call s:InsertIncludeGurd()
-
-
-function! s:InsertIncludeGurd()
-  let fn = expand('%')
-  let fn = toupper(fn)
-  let fn = substitute(fn, '\W', '_', 'g')
-  let fn = (exists('g:IncludeGuardPrefix') ? g:IncludeGuardPrefix : '') . fn
-  let fn0 = "#ifndef\t" . fn
-  let fn1 = "#define\t" . fn
-  let fn2 = "#endif\t/* " . fn . " */"
-  call append(0, fn0)
-  call append(1, fn1)
-  call append(line('$'), fn2)
-  echo fn
-endfunction
-
-
-
-"---------------------------------------------------------------------------------------------
 
 " com! -nargs=? -complete=customlist,s:CompletionTabline Tabline call <SID>ToggleTabline(<args>)
 
@@ -161,95 +140,6 @@ vnoremap <Leader><C-s>                :g!<C-r>/!<Space>
 
 
 "---------------------------------------------------------------------------------------------
-" if-def の構造を可視化する。
-
-let s:Indent = 4
-
-"? function! IfDefStruct()
-"?   let ind = -s:Indent
-"?   for i in range(1, line('$'))
-"?     let c = getline(i)
-"? 
-"?     if i == line('.')
-"?       "echo repeat(' ', ind < 0 ? 0 : s:Indent * ind) . '........................................'
-"?     endif
-"? 
-"?     if     c =~# '^\s*#\s*if'
-"?       let ind += s:Indent
-"?     elseif c =~# '^\s*#\s*elif'
-"?     elseif c =~# '^\s*#\s*else'
-"?     elseif c =~# '^\s*#\s*endif'
-"?     else
-"?       continue
-"?     endif
-"?     echo repeat(' ', s:Indent * ind) . c
-"? 
-"?     if     c =~# '^\s*#\s*endif'
-"?       " 見やすいように、endifの後には空行を出力。
-"?       echo "\n"
-"?       let ind -= s:Indent
-"?     endif
-"?   endfor
-"? endfunction
-
-function! IfDefStruct()
-  let ind = -s:Indent
-  for i in range(1, line('$'))
-    let c = getline(i)
-
-    if i == line('.')
-      echo repeat(' ', ind + s:Indent) . '........................................'
-    endif
-
-    if     c =~# '^\s*#\s*if'
-      let ind += s:Indent
-    elseif c =~# '^\s*#\s*elif'
-    elseif c =~# '^\s*#\s*else'
-    elseif c =~# '^\s*#\s*endif'
-    else
-      continue
-    endif
-    echo repeat(' ', ind) . c
-
-    if     c =~# '^\s*#\s*endif'
-      " 見やすいように、endifの後には空行を出力。
-      echo "\n"
-      let ind -= s:Indent
-    endif
-  endfor
-endfunction
-
-com! IfDefStruct call IfDefStruct()
-
-
-com! IfDefStructInBuffer call s:IfDefStructInBuffer()
-
-"? function! s:IfDefStructInBuffer()
-"?   new
-"?   silent put =execute('IfDefStruct')
-"?   1,2delete _
-"? endfunction
-
-function! s:IfDefStructInBuffer()
-  let temp = execute('IfDefStruct')
-  new
-  silent put =temp
-  1,2delete _
-endfunction
-
-
-function! s:CommnadOutput()
-  redir => result
-  silent execute 'IfDefStruct'
-  redir END
-  return result
-endfunction
-
-" let @*=execute('IfDefStruct')
-
-
-
-"---------------------------------------------------------------------------------------------
 
 "? cmap <expr> <CR> ( getcmdtype() == '/' ) ?
 "?                \ ( '<Plug>(Search-SlashCR)' ) :
@@ -258,101 +148,6 @@ endfunction
 "?                \ ( getcmdtype() == ':' && getcmdline() =~# '^:*lcd\? *$') ?
 "?                \ ( '<C-e><C-u>echo "引数なしのlcdは使用禁止。pw[d]を使用。"<CR>' ) :
 "?                \ ( '<CR>' )
-
-
-
-"---------------------------------------------------------------------------------------------
-
-nnoremap <Leader><C-p> :<C-u>call <SID>next_nonamebuf(-1)<CR>
-nnoremap <Leader><C-n> :<C-u>call <SID>next_nonamebuf(+1)<CR>
-
-function! s:next_nonamebuf(n)
-  let first_buf = 1
-  let cur_buf = bufnr()
-  let last_buf = bufnr('$')
-
-  if a:n > 0
-    let sta1 = cur_buf + 1
-    let end1 = last_buf
-
-    let sta2 = first_buf
-    let end2 = cur_buf - 1
-
-    let dis = +1
-  else
-    let sta1 = cur_buf - 1
-    let end1 = first_buf
-
-    let sta2 = last_buf
-    let end2 = cur_buf + 1
-
-    let dis = -1
-  endif
-
-  if !s:next_nonamebuf_sub(sta1, end1, dis)
-    call s:next_nonamebuf_sub(sta2, end2, dis)
-  endif
-endfunction
-
-function! s:next_nonamebuf_sub(sta, end, dis )
-  "echo  a:sta a:end a:dis
-  for i in range(a:sta, a:end, a:dis)
-    "echo i bufname(i)
-    if buflisted(i) && bufname(i) == '' " && buf modified
-      exe 'b' i
-      return v:true
-    endif
-  endfor
-  return v:false
-endfunction
-
-
-
-"---------------------------------------------------------------------------------------------
-
-nnoremap <Leader><C-p> :<C-u>call <SID>next_modified_nonamebuf(-1)<CR>
-nnoremap <Leader><C-n> :<C-u>call <SID>next_modified_nonamebuf(+1)<CR>
-
-function! s:next_modified_nonamebuf(n)
-  let first_buf = 1
-  let cur_buf = bufnr()
-  let last_buf = bufnr('$')
-
-  if a:n > 0
-    let sta1 = cur_buf + 1
-    let end1 = last_buf
-
-    let sta2 = first_buf
-    let end2 = cur_buf - 1
-
-    let dis = +1
-  else
-    let sta1 = cur_buf - 1
-    let end1 = first_buf
-
-    let sta2 = last_buf
-    let end2 = cur_buf + 1
-
-    let dis = -1
-  endif
-
-  if !s:next_modified_nonamebuf_sub(sta1, end1, dis)
-    if !s:next_modified_nonamebuf_sub(sta2, end2, dis)
-      echo '変更された無名バッファはありません。'
-    endif
-  endif
-endfunction
-
-function! s:next_modified_nonamebuf_sub(sta, end, dis )
-  "echo  a:sta a:end a:dis
-  for i in range(a:sta, a:end, a:dis)
-    if buflisted(i) && bufname(i) == '' && getbufinfo(i)[0].changed
-      exe 'b' i
-      return v:true
-    endif
-  endfor
-  return v:false
-endfunction
 
 
 
@@ -424,11 +219,6 @@ nmap ? *
 
 "---------------------------------------------------------------------------------------------
 
-com! KakkoZenkaku s/(/（/g |  s/)/）/g
-
-
-"---------------------------------------------------------------------------------------------
-
 function! Find(arg)
   "echo a:arg
   "et f = a:arg
@@ -457,18 +247,6 @@ endfunction
 
 com! -bar -nargs=* Find call Find(<q-args>)
 com! -bar -nargs=* F Find <args>
-
-
-"---------------------------------------------------------------------------------------------
-
-com! NoWrap PushPosAll | exe 'windo set nowrap' | PopPosAll
-com! WinNoWrap PushPosAll | exe 'windo set nowrap' | PopPosAll
-com! AllNoWrap PushPosAll | exe 'windo set nowrap' | PopPosAll
-
-com! Wrap PushPosAll | exe 'windo set wrap' | PopPosAll
-com! WinWrap PushPosAll | exe 'windo set wrap' | PopPosAll
-com! AllWrap PushPosAll | exe 'windo set wrap' | PopPosAll
-
 
 
 "---------------------------------------------------------------------------------------------
