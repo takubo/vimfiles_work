@@ -92,37 +92,6 @@ nnoremap <silent> <Leader><Tab> :<C-u>cc<CR>
 
 "---------------------------------------------------------------------------------------------
 
-" com! -nargs=? -complete=customlist,s:CompletionTabline Tabline call <SID>ToggleTabline(<args>)
-
-function! s:ToggleTabline(arg)
-  if (a:arg . '') == ''
-    echo s:TablineStatus
-  elseif (a:arg . '') == '+'
-    let s:TablineStatus = ( s:TablineStatus + 1 ) % s:TablineStatusNum
-  elseif (a:arg . '') == '-'
-    let s:TablineStatus = ( s:TablineStatus - 1 ) % s:TablineStatusNum
-  elseif a:arg < s:TablineStatusNum
-    let s:TablineStatus = a:arg
-  else
-    echoerr 'Tabline:Invalid argument.'
-    return
-  endif
-
-  let &showtabline = ( s:TablineStatus == 0 ? 0 : 2 )
-
-  call UpdateTabline(0)
-endfunction
-
-let s:TablineStatusNum = 8
-
-function! s:CompletionTabline(ArgLead, CmdLine, CusorPos)
-  return map(range(0, s:TablineStatusNum), 'v:val . ""') + ['+', '-']
-endfunction
-
-
-
-"---------------------------------------------------------------------------------------------
-
 iab FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}
 iab <silent> FORI for ( uint32_t i = 0U; i < N; i++ ) {<CR><CR>}<C-R>=Eatchar('\s')<CR>
 
