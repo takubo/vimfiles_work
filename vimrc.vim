@@ -37,7 +37,6 @@ set encoding=utf-8
 set formatoptions+=mM
 set formatoptions-=o
 set gp=grep\ -n
-set guicursor=n-v-c:block-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor,r-cr:hor20-Cursor/lCursor,a:blinkon0
 set hidden
 if !&hlsearch
   " ReVimrcする度にハイライトされるのを避ける。
@@ -851,42 +850,6 @@ let NERDTreeShowHidden = 1
 
 
 
-" Transparency {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
-
-if has('gui')
-  let g:my_transparency = 229
-  let g:my_transparency = 227
-  let g:my_transparency = 235
-  let g:my_transparency = float2nr((255 - g:my_transparency) * 100 / 255)
-  augroup MyVimrc_GUI
-    au!
-    "au GUIEnter * simalt ~x
-    "au GUIEnter * ScreenMode 4
-    "au GUIEnter * ScreenMode 5
-    exe 'au GUIEnter * set transparency=' . g:my_transparency
-  augroup end
-  nnoremap <silent> <S-PageUp>   :<C-u>ScreenMode 5<CR>
-  nnoremap <silent> <S-PageDown> :<C-u>ScreenMode 4<CR>
-  nnoremap <silent> <A-PageUp>   :<C-u>ScreenMode 5<CR>:Thinkpad<CR>
-  nnoremap <silent> <A-PageDown> :<C-u>ScreenMode 4<CR>:Thinkpad<CR>
-
-
-  nnoremap <silent><expr> <PageUp>   ':<C-u>se transparency=' .    ( &transparency + 1      ) . '<Bar> Transparency <CR>'
-  nnoremap <silent><expr> <PageDown> ':<C-u>se transparency=' . max([&transparency - 1,   1]) . '<Bar> Transparency <CR>'   | " transparencyは、0以下を設定すると255になってしまう。
-
-  nnoremap <silent>       <C-PageUp>   :exe 'se transparency=' . (&transparency == g:my_transparency ? 255 : g:my_transparency) <Bar> Transparency <CR>
-  nnoremap <silent>       <C-PageDown> :exe 'se transparency=' . (&transparency == g:my_transparency ?  50 : g:my_transparency) <Bar> Transparency <CR>
-
-  com! Transparency echo printf(' Transparency = %4.1f%%', &transparency * 100 / 255.0)
-
-  exe 'set transparency=' . g:my_transparency
-endif
-
-
-" Transparency }}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}
-
-
-
 " FuncName {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{
 
 
@@ -1191,54 +1154,6 @@ nmap gt <Plug>(PrjTree-MyExplore)
 let g:submode_timeoutlen = 5000
 
 
-
-
-
-
-
-
-" Line
-" 	1080
-" 	90
-" 
-" 	768
-" 	64
-" 
-" Col
-" 	1920
-" 	320
-" 
-" 	1024
-" 	170.666667
-" 
-" set lines=64 columns0171
-com! XGA set lines=64 columns=171
-
-" Thinkpad
-com! Thinkpad set lines=75 columns=267 | winpos 150 110
-
-
-if has('mac')
-  augroup IME_Mac
-    autocmd!
-    autocmd InsertLeave * :call job_start(
-	  \ ['osascript', '-e', 'tell application "System Events" to key code {102}'],
-	  \ {'in_io': 'null', 'out_io': 'null', 'err_io': 'null'})
-    autocmd VimEnter * :call job_start(
-	  \ ['osascript', '-e', 'tell application "System Events" to key code {102}'],
-	  \ {'in_io': 'null', 'out_io': 'null', 'err_io': 'null'})
-    autocmd GuiEnter * set guioptions=
-  augroup END
-
-
-
-  function! Mac_ime_off()
-    call job_start(
-	  \ ['osascript', '-e', 'tell application "System Events" to key code {102}'],
-	  \ {'in_io': 'null', 'out_io': 'null', 'err_io': 'null'})
-  endfunction
-  call EscEsc_Add('call Mac_ime_off()')
-endif
 
 
 set termguicolors
